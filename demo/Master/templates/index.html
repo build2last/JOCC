@@ -1,0 +1,81 @@
+
+<!DOCTYPE html>
+<html>
+<head>	  
+<meta charset="utf-8">
+<meta HTTP-EQUIV="Pragma" CONTENT="no-cache"> 
+<meta HTTP-EQUIV="Cache-Control" CONTENT="no-cache"> 
+<meta HTTP-EQUIV="Expires" CONTENT="0">
+<title>分布式机器任务监视</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="http://apps.bdimg.com/libs/bootstrap/3.3.0/css/bootstrap.min.css">
+<style type="text/css">
+    body
+    {
+    padding-bottom: 60px;
+    }
+    .insti-label
+    {
+        height:120px;
+        background:#FFF8DC;
+        text-align:center;
+        vertical-align:middle;
+        margin-bottom:1em;           
+    }
+</style>
+</head>
+<body>  
+    <div class="container">
+        <div class="row clearfix">
+            <div class="col-md-12 column">
+                <div class="jumbotron">
+                    <h1>
+                        简易分布式任务监视
+                    </h1>
+                    <p>
+                        爬虫运行情况监视
+                    </p>
+                    <p>
+                         <a class="btn btn-primary btn-large" href="https://github.com/build2last/QzoneLiker">Project</a>
+                    </p>
+                </div>
+                <div class="row clearfix">
+                    <div class="col-md-8 column">
+                        <div class="page-header">
+                            <h1>
+                                运行情况
+                            </h1>
+                        </div>
+                    </div>
+                </div>
+                <div class="row clearfix">
+                        <div class="page-detail">
+                            <h2><small>在线 Worker </small></h2>
+                            <p class="lead">
+                            {% for worker in workers %}
+                                <div class="col-md-4 column">
+                                  <span class="label label-success">{{ escape(worker["wid"]) }}</span>
+                                  <p>{{ worker["status"] }}</p>
+                                  <p>本次运行已完成任务数量：{{ worker["work_load"] }}</p>
+                                  获取已抓取数据:<a href="ftp://{{ escape(worker["wid"]) }}:2121">ftp://{{ escape(worker["wid"]) }}:2121</a>
+                                </div>
+                            {% end %}
+                            </p>
+                        </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- 定时刷新图片
+    <script>
+    setInterval("document.getElementById('qrimg').src='/api/v1/qrcode/v.png?t=' + Math.random()",3000);
+    </script>
+
+    <script src="http://apps.bdimg.com/libs/jquery/2.1.1/jquery.min.js"></script>
+    <script src="http://apps.bdimg.com/libs/bootstrap/3.3.0/js/bootstrap.min.js"></script> -->
+  </body>
+  <footer style="bottom: 0; margin-top: 20px;">
+    <p align="center">Powered by Tornado</p>
+  </footer>
+</html>
+    
