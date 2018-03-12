@@ -1,5 +1,5 @@
 # JOCC
-To distribute/collect tasks and information on LAN. //Allusion to joint operations control center in military domin.
+To distribute/collect tasks and information on LAN. //Allusion to **Joint Operations Cntrol Center** in military domin.
 
 # 软件简介
 Master负责任务的制作和分发，Worker从Master获取任务并交由scrapy完成；
