@@ -48,9 +48,9 @@ class CSVPipeline(object):
     return pipeline
 
   def spider_opened(self, spider):
-    file = open('DATA/%s_items_%s.csv' %(spider.name, time.strftime('%Y-%m-%d',time.localtime(time.time()))), 'ab+')
+    file = open('DATA/%s_items_%s.tab.csv' %(spider.name, time.strftime('%Y-%m-%d',time.localtime(time.time()))), 'ab+')
     self.files[spider] = file
-    self.exporter = CsvItemExporter(file, include_headers_line=False)
+    self.exporter = CsvItemExporter(file, include_headers_line=False, delimiter='\t')
     self.exporter.fields_to_export = ["mid", "user_name", "cmt", "time"]
     self.exporter.start_exporting()
 
@@ -70,6 +70,7 @@ class CSVPipeline(object):
     # 数据落盘后，视情况向Master反馈任务完成情况
     mid = item["mid"]
     if is_need_report_task(mid):
+      spider.worker.worker_info["status"] = spider.name + " is working."
       spider.worker.report_task([mid])
     # */
     return item

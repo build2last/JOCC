@@ -6,12 +6,13 @@ import conf
 import Server
 
 # Another way to load data to MySQL:
-# load data infile "C://ProgramData/MySQL/MySQL Server 5.7/Uploads/track_info_url_0_part0.txt" ignore into table develop.crawler_task(mid, url);
+# load data infile "C://ProgramData/MySQL/MySQL Server 5.7/Uploads/track_info_url_0_part0.txt" ignore into table develop.task(mid, url);
+# doing: load data infile "C://ProgramData/MySQL/MySQL Server 5.7/Uploads/track_info_url_1_part1.txt" ignore into table develop.task(mid, url);
 
 class Master:
     def __init__(self):
         CREATE_TABLE_SQL = (
-        """CREATE TABLE IF NOT EXISTS `crawler_task` ( 
+        """CREATE TABLE IF NOT EXISTS `task` ( 
             `mid` varchar(50) NOT NULL, 
             `status` tinyint(1) NOT NULL DEFAULT '0' COMMENT '0:未分配 1:已分配未反馈 2:已完成',
             `worker` varchar(45) DEFAULT NULL, 
@@ -42,7 +43,7 @@ class Master:
         counter = 0
         for item in items:
             try:
-                insert_sql = """insert IGNORE into {table_name} ({column1}, {column2}) VALUES (%s, %s)""".format(table_name="crawler_task", column1="mid", column2="url")
+                insert_sql = """insert IGNORE into {table_name} ({column1}, {column2}) VALUES (%s, %s)""".format(table_name="task", column1="mid", column2="url")
                 cursor.execute(insert_sql, (item[0], item[1]))
                 counter += 1
                 conn.commit()
@@ -53,7 +54,7 @@ class Master:
     def load_fast(self, conn, items):
         #Fail
         cursor = conn.cursor()
-        insert_sql = """insert into {table_name} ({column1}, {column2}) VALUES (%s, %s)""".format(table_name="crawler_task", column1="mid", column2="url")
+        insert_sql = """insert into {table_name} ({column1}, {column2}) VALUES (%s, %s)""".format(table_name="task", column1="mid", column2="url")
         paras = []
         for i in items:
             if i[0] not in self.mid and i[1] not in self.urls:

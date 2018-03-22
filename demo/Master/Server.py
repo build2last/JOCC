@@ -26,15 +26,16 @@ class IndexHandler(tornado.web.RequestHandler):
 class SendWorkHandler(tornado.web.RequestHandler):
     def get(self, input):
         task_num = int(self.get_argument('num', '100'))
+        task_num = 500 #DEBUG
         conn = MySQLdb.connect(host=conf.HOST, user=conf.USER, passwd=conf.PASS, db=conf.DB_NAME, port=conf.DBPORT, charset='utf8')
         cursor = conn.cursor()
-        query_sql = "SELECT mid, url FROM crawler_task WHERE status=0 LIMIT %d"%task_num
+        query_sql = "SELECT mid, url FROM task WHERE status=0 LIMIT %d"%task_num
         cursor.execute(query_sql)
         tasks = cursor.fetchall()
         self.set_header('Content-Type', 'application/json; charset=UTF-8')
         self.write(json.dumps( {"tasks":[{"mid":i[0], "url":i[1]} for i in tasks]} ))
         for task in tasks:
-            update_sql = "UPDATE crawler_task SET status = 1 WHERE mid = %s"
+            update_sql = "UPDATE task SET status = 1 WHERE mid = %s"
             cursor.execute(update_sql,(task[0],))
         conn.commit()
         conn.close()
@@ -47,11 +48,11 @@ class SendWorkHandler(tornado.web.RequestHandler):
         if isinstance(mids, str):
             param = eval(mids)
         for mid in param:
-            update_sql = "UPDATE crawler_task SET status = 2 WHERE mid = %s"
+            update_sql = "UPDATE task SET status = 2 WHERE mid = %s"
             cursor.execute(update_sql,(mid,))
         conn.commit()
         conn.close()
-        self.write('OK')       
+        self.write('Database has been updated!')       
 
 class WorkerStatusHandler(tornado.web.RequestHandler):
     """Listen to heart beat 显示并更新 worker 的状态信息"""
@@ -80,6 +81,7 @@ class WorkerStatusHandler(tornado.web.RequestHandler):
         self.write('OK')
 
 def timer_work(time_delta=120):
+    # Refresh workers' status
     global WORKERS_INFO
     WORKERS_INFO = {}
     t = threading.Timer(time_delta, timer_work, (time_delta,))
@@ -101,7 +103,7 @@ def start_server():
     tornado.ioloop.IOLoop.instance().start()
 
 if __name__ == '__main__':
-    t = threading.Thread(target=timer_work, args=(30,))
+    t = threading.Thread(target=timer_work, args=(120,))
     t.start()
     t.join()
     start_server()

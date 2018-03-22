@@ -18,7 +18,7 @@ class Worker:
     """
     def __init__(self, name):
         self.name = name
-        self.worker_info = {}
+        self.worker_info = {}   # 记录爬虫运行情况
         self.lock = threading.Lock()
 
     def update_worker_info(self, worker_info):
@@ -34,15 +34,15 @@ class Worker:
         staus = urllib.request.urlopen(req).read()
         print(staus)
 
-    def get_task(self, auto=True, num=100):
+    def get_task(self, auto=True, num=500):
         """With auto=True the worker instance will continue to get batch tasks from master. 
         So the generator won't start untill Master stop to provide tasks."""
-        tasks = json.loads(urllib.request.urlopen(TASK_URL+"?num=%d"%num, timeout=10).read())
+        tasks = json.loads(urllib.request.urlopen(TASK_URL+"?num=%d"%num, timeout=15).read())
         while tasks["tasks"]:
             task = tasks["tasks"].pop()
             yield (task["mid"], task["url"])
         while auto:
-            tasks = json.loads(urllib.request.urlopen(TASK_URL+"?num=%d"%num, timeout=10).read())
+            tasks = json.loads(urllib.request.urlopen(TASK_URL+"?num=%d"%num, timeout=15).read())
             if len(tasks["tasks"]) < num:
                 auto = False
             while tasks["tasks"]:
@@ -51,7 +51,6 @@ class Worker:
 
     def heart_beat(self, time_delta=60):
         """Sent information to master as a timer thread."""
-        self.worker_info["status"] = "I am OK!"
         postdata = urllib.parse.urlencode({"worker_info":self.worker_info}).encode("utf-8")
         url = HERAT_BEAT_URL
         req = urllib.request.Request(url, postdata)

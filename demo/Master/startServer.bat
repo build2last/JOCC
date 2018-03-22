@@ -1,2 +1,2 @@
-title 分布式任务中心控制服务器
+title 鍒嗗竷寮忎换鍔′腑蹇冩帶鍒舵湇鍔″櫒
 python Server.py

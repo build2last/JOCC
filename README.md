@@ -14,6 +14,8 @@ Worker持续不断地从Master获取任务，同时使用产生器机制又使�
 
 Worker在数据成功落盘后才会考虑是否向Server反馈任务完成信号。
 
+Worker的状态信息只通过定时心跳来反馈。
+
 在开工前没有接触过分布式系统，按照我的想法在scrapy的基础上实现了一些功能，目的是方便地将scrapy爬虫扩展成分布式爬虫在多台机器上运行。实际项目中任务数据量在百万量级，而scrapy爬虫本身较为简单。
 
 分布式系统中常见的难题：
@@ -26,7 +28,7 @@ Worker在数据成功落盘后才会考虑是否向Server反馈任务完成信�
 
 demo中的Scrapy用于抓取Lastfm歌曲评论信息。
 
-worker 和 master 作为核心亮点功能终点突破，结合scrapy新特性，实现远程对主机进行任务监控，最终任务是实现远程代码部署。
+worker 和 master 作为核心亮点功能终点开发，结合scrapy新特性，实现远程对主机进行任务监控，最终任务是实现远程代码部署。
 
 ## 启动方法
 ### Master
@@ -38,6 +40,8 @@ worker 和 master 作为核心亮点功能终点突破，结合scrapy新特性�
 > startCrawler.bat
 
 > startFTP.bat
+
+使用时请注意VPN代理服务器对IP地址的影响。
 
 ## 分布式爬虫设计概述
 
@@ -51,7 +55,7 @@ Worker中worker模块负责从master获取任务，爬虫调用worker接口获�
 * 开启FTP：供远程访问和下载数据；端口2121
 * 开启爬虫：爬虫同时通过 worker 模块提供心跳信息给 master，爬虫默认永续运行
 
-可以通过telnet控制爬虫
+scrapy支持通过telnet控制爬虫
 
 ### Master
 * 接收 worker 信息 
