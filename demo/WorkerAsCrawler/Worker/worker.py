@@ -7,6 +7,7 @@ import json
 MASTER_ADDRESS = "http://58.198.176.33:8081"
 TASK_URL = MASTER_ADDRESS + "/worker/task"
 HERAT_BEAT_URL = MASTER_ADDRESS+"/worker/status"
+TIMEOUT_LIMIT = 30
 
 class Worker:
     """
@@ -20,12 +21,17 @@ class Worker:
         self.name = name
         self.worker_info = {}   # 记录爬虫运行情况
         self.lock = threading.Lock()
+        self.work_load = 0
 
     def update_worker_info(self, worker_info):
         self.lock.acquire()
         for key in worker_info:
             self.worker_info[key] = worker_info[key]
         self.lock.release()
+
+    def update_worker_info_for_one_task(self):
+        self.work_load += 1
+        self.worker_info["work_load"] = self.work_load
 
     def report_task(self, tids):
         # Report to master about which task has been done
@@ -34,20 +40,35 @@ class Worker:
         staus = urllib.request.urlopen(req).read()
         print(staus)
 
-    def get_task(self, auto=True, num=500):
+    def get_task(self, task_type, auto=True, num=500):
         """With auto=True the worker instance will continue to get batch tasks from master. 
         So the generator won't start untill Master stop to provide tasks."""
-        tasks = json.loads(urllib.request.urlopen(TASK_URL+"?num=%d"%num, timeout=15).read())
+        tasks = json.loads(
+            urllib.request.urlopen(TASK_URL+"?num={num}&tasktype={tasktype}".format(
+                num=num,tasktype=task_type), 
+                timeout=TIMEOUT_LIMIT).read()
+            )
         while tasks["tasks"]:
             task = tasks["tasks"].pop()
-            yield (task["mid"], task["url"])
+            if task_type == "cmt":
+                yield (task["mid"], task["url"])
+            elif task_type == "trackinfo":
+                yield task["mid"]
         while auto:
-            tasks = json.loads(urllib.request.urlopen(TASK_URL+"?num=%d"%num, timeout=15).read())
+            tasks = json.loads(
+                urllib.request.urlopen(TASK_URL+"?num={num}&tasktype={tasktype}".format(
+                    num=num,tasktype=task_type), 
+                    timeout=TIMEOUT_LIMIT).read()
+                )
             if len(tasks["tasks"]) < num:
                 auto = False
             while tasks["tasks"]:
                 task = tasks["tasks"].pop()
-                yield (task["mid"], task["url"])
+                if task_type == "cmt":
+                    yield (task["mid"], task["url"])
+                elif task_type == "trackinfo":
+                    yield task["mid"]
+
 
     def heart_beat(self, time_delta=60):
         """Sent information to master as a timer thread."""

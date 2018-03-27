@@ -51,7 +51,10 @@ class CSVPipeline(object):
     file = open('DATA/%s_items_%s.tab.csv' %(spider.name, time.strftime('%Y-%m-%d',time.localtime(time.time()))), 'ab+')
     self.files[spider] = file
     self.exporter = CsvItemExporter(file, include_headers_line=False, delimiter='\t')
-    self.exporter.fields_to_export = ["mid", "user_name", "cmt", "time"]
+    if spider.name == "cmtUser":
+      self.exporter.fields_to_export = ["mid", "user_name", "cmt", "time"]
+    elif spider.name == "trackInfo":
+       self.exporter.fields_to_export = ["json"]
     self.exporter.start_exporting()
 
   def spider_closed(self, spider):
@@ -61,7 +64,7 @@ class CSVPipeline(object):
     file.close()
     # /*
     spider.worker.report_task(LATEST_TASK_QUEUE)
-    print("%d/%d tasks have been done!"%(TASK_COUNTER, spider.work_load))
+    print("%d/%d tasks have been done!"%(TASK_COUNTER, spider.worker.work_load))
     # */
 
   def process_item(self, item, spider):

@@ -16,9 +16,11 @@ class CmtuserSpider(scrapy.Spider):
     AUTO_MODE = True
     name = 'cmtUser'
     allowed_domains = ['last.fm']
-    start_targets = WORKER.get_task(auto=AUTO_MODE)
+    start_targets = WORKER.get_task(auto=AUTO_MODE, task_type="cmt")
     custom_settings = {
-        'DOWNLOAD_DELAY' : 0   
+        'DOWNLOAD_DELAY' : 0,
+        'LOG_FILE'  : name + "_log.txt",
+        'LOG_LEVEL' : "DEBUG",
     }
     worker = WORKER
     work_load = 0

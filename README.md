@@ -1,5 +1,5 @@
 # JOCC
-To distribute/collect tasks and information on LAN. //Allusion to **Joint Operations Cntrol Center** in military domin.
+Distributed crawler on LAN. //Allusion to **Joint Operations Cntrol Center** in military domin.
 
 # 软件简介
 Master负责任务的制作和分发，Worker从Master获取任务并交由scrapy完成；
@@ -28,7 +28,7 @@ Worker的状态信息只通过定时心跳来反馈。
 
 demo中的Scrapy用于抓取Lastfm歌曲评论信息。
 
-worker 和 master 作为核心亮点功能终点开发，结合scrapy新特性，实现远程对主机进行任务监控，最终任务是实现远程代码部署。
+worker 和 master 作为核心亮点功能重点开发，结合scrapy新特性，实现远程对主机进行任务监控，最终目标是实现远程代码部署和程序控制。
 
 ## 启动方法
 ### Master

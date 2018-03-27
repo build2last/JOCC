@@ -25,21 +25,38 @@ class IndexHandler(tornado.web.RequestHandler):
 
 class SendWorkHandler(tornado.web.RequestHandler):
     def get(self, input):
-        task_num = int(self.get_argument('num', '100'))
-        task_num = 500 #DEBUG
-        conn = MySQLdb.connect(host=conf.HOST, user=conf.USER, passwd=conf.PASS, db=conf.DB_NAME, port=conf.DBPORT, charset='utf8')
-        cursor = conn.cursor()
-        query_sql = "SELECT mid, url FROM task WHERE status=0 LIMIT %d"%task_num
-        cursor.execute(query_sql)
-        tasks = cursor.fetchall()
-        self.set_header('Content-Type', 'application/json; charset=UTF-8')
-        self.write(json.dumps( {"tasks":[{"mid":i[0], "url":i[1]} for i in tasks]} ))
-        for task in tasks:
-            update_sql = "UPDATE task SET status = 1 WHERE mid = %s"
-            cursor.execute(update_sql,(task[0],))
-        conn.commit()
-        conn.close()
-    
+        task_type = self.get_argument('tasktype', 'cmt')
+        if task_type == "cmt":
+            task_num = int(self.get_argument('num', '500'))
+            conn = MySQLdb.connect(host=conf.HOST, user=conf.USER, passwd=conf.PASS, db=conf.DB_NAME, port=conf.DBPORT, charset='utf8')
+            cursor = conn.cursor()
+            query_sql = "SELECT mid, url FROM task WHERE status=0 LIMIT %d"%task_num
+            cursor.execute(query_sql)
+            tasks = cursor.fetchall()
+            self.set_header('Content-Type', 'application/json; charset=UTF-8')
+            self.write(json.dumps( {"tasks":[{"mid":i[0], "url":i[1]} for i in tasks]} ))
+            for task in tasks:
+                update_sql = "UPDATE task SET status = 1 WHERE mid = %s"
+                cursor.execute(update_sql,(task[0],))
+            conn.commit()
+            conn.close()
+        elif task_type == "trackinfo":
+            task_num = int(self.get_argument('num', '500'))
+            conn = MySQLdb.connect(host=conf.HOST, user=conf.USER, passwd=conf.PASS, db=conf.DB_NAME, port=conf.DBPORT, charset='utf8')
+            cursor = conn.cursor()
+            query_sql = "SELECT mid FROM task WHERE status=2 LIMIT %d"%task_num
+            cursor.execute(query_sql)
+            tasks = cursor.fetchall()
+            self.set_header('Content-Type', 'application/json; charset=UTF-8')
+            tasks_content = json.dumps( {"tasks":[{"mid":i[0]} for i in tasks]} )
+            self.write(tasks_content)
+            for task in tasks:
+                update_sql = "UPDATE task SET status = 3 WHERE mid = %s"
+                cursor.execute(update_sql,(task,))
+            conn.commit()
+            conn.close()         
+
+        
     def post(self, input):
         #TODO:May Connection Pool be helpful to handle frequent transaction.
         conn = MySQLdb.connect(host=conf.HOST, user=conf.USER, passwd=conf.PASS, db=conf.DB_NAME, port=conf.DBPORT, charset='utf8')
@@ -48,7 +65,7 @@ class SendWorkHandler(tornado.web.RequestHandler):
         if isinstance(mids, str):
             param = eval(mids)
         for mid in param:
-            update_sql = "UPDATE task SET status = 2 WHERE mid = %s"
+            update_sql = "UPDATE task SET status = status+1 WHERE mid = %s"
             cursor.execute(update_sql,(mid,))
         conn.commit()
         conn.close()

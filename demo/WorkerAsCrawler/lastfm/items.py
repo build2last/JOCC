@@ -20,3 +20,6 @@ class CmtItem(scrapy.Item):
     mid = scrapy.Field()
     cmt = scrapy.Field()
 
+class TrackItem(scrapy.Item):
+    mid = scrapy.Field()
+    json = scrapy.Field()

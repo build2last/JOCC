@@ -10,8 +10,8 @@
 #     http://scrapy.readthedocs.org/en/latest/topics/spider-middleware.html
 
 BOT_NAME = 'lastfm'
-LOG_FILE = BOT_NAME + "_log.txt"
-LOG_LEVEL = "INFO"
+# LOG_FILE = BOT_NAME + "_log.txt"
+# LOG_LEVEL = "DEBUG"
 SPIDER_MODULES = ['lastfm.spiders']
 NEWSPIDER_MODULE = 'lastfm.spiders'
 

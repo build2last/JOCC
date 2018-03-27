@@ -80,16 +80,16 @@ class Master:
             self.load_func(conn, tasks)
             #self.load_fast(conn, tasks)
         except Exception as e:
-            pass
+            print(e)
         finally:
             conn.close()
     
 def main():
     master = Master()
-    task_files = ["track_info_url_0_part0.txt","track_info_url_0_part1.txt","track_info_url_1_part0.txt","track_info_url_2_part1.txt","track_info_url_3_part0.txt","track_info_url_3_part1.txt","track_info_url_4_part0.txt","track_info_url_6_part0.txt","track_info_url_7_part0.txt","track_info_url_7_part1.txt"]
-    for task_file in task_files[2:3]:
+    task_files = ["track_info_url_5_part0.txt","track_info_url_5_part1.txt","track_info_url_6_part1.txt","track_info_url_8_part0.txt","track_info_url_8_part1.txt","track_info_url_9_part0.txt","track_info_url_9_part1.txt"]
+    for task_file in task_files:
         print("Processing %s"%task_file)
-        path = r"E:\LiuKun\Project2018\CurrentWork\音乐爬虫\LastFMURL\\" + task_file
+        path = r"C:\ProgramData\MySQL\MySQL Server 5.7\Uploads\\" + task_file
         master.load_task(path)
 
 if __name__ == '__main__':
